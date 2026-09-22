@@ -1,3 +1,125 @@
+import 'dart:math';
+
+class Person implements Comparable {
+  final String first;
+  final String last;
+  final int age;
+  Person(this.first, this.last, this.age);
+
+  @override
+  int compareTo(other) {
+    var resultat = (this.age - other.age) as int;
+    if (resultat == 0) {
+      resultat = (this.last + this.first).compareTo(other.last + other.first);
+    }
+    return resultat;
+  }
+
+  @override
+  String toString() {
+    return first + " " + last + " " + age.toString();
+  }
+}
+
+//exo 8
+class Matrix {
+  List<List<int>> values;
+  Matrix(this.values);
+
+  Matrix operator +(Matrix m) {
+    int lignes = this.values.length;
+    int colonnes = this.values[0].length;
+    Matrix ans = Matrix(
+      List.generate(lignes, ((index) => List.filled(colonnes, 0))),
+    );
+    for (int i = 0; i < lignes - 1; i++) {
+      for (int j = 0; j < colonnes - 1; j++) {
+        ans.values[i][j] = this.values[i][j] + m.values[i][j];
+      }
+    }
+    return ans;
+  }
+
+  Matrix operator *(Matrix m) {
+    int colonnesA = this.values[0].length;
+    int lignesB = m.values.length;
+    if (colonnesA != lignesB) {
+      throw Exception(
+        "Matrices incompatibles : $colonnesA colonnes != $lignesB lignes",
+      );
+    }
+
+    int lignes = this.values.length;
+    int colonnes = m.values[0].length;
+    int n = colonnesA;
+
+    Matrix ans = Matrix(List.generate(lignes, (_) => List.filled(colonnes, 0)));
+
+    for (int i = 0; i < lignes; i++) {
+      for (int j = 0; j < colonnes; j++) {
+        int somme = 0;
+        for (int k = 0; k < n; k++) {
+          somme += this.values[i][k] * m.values[k][j];
+        }
+        ans.values[i][j] = somme;
+      }
+    }
+
+    return ans;
+  }
+
+  @override
+  String toString() {
+    int colWidth = values
+        .expand((row) => row)
+        .map((e) => e.toString().length)
+        .reduce((a, b) => a > b ? a : b);
+
+    String result = "";
+    for (int i = 0; i < values.length; i++) {
+      String row = values[i]
+          .map((e) => e.toString().padLeft(colWidth))
+          .join("  ");
+
+      if (i == 0) {
+        result += "⎡ $row ⎤\n";
+      } else if (i == values.length - 1) {
+        result += "⎣ $row ⎦\n";
+      } else {
+        result += "⎢ $row ⎥\n";
+      }
+    }
+    return result;
+  }
+}
+
+//exo 9
+
+abstract class Shape {
+  double area();
+}
+
+class Circle extends Shape {
+  final int radius;
+  Circle(int this.radius);
+
+  @override
+  double area() {
+    return pi * pow(radius, 2);
+  }
+}
+
+class Rectangle extends Shape {
+  final double long;
+  final double larg;
+  Rectangle(double this.long, double this.larg);
+
+  @override
+  double area() {
+    return long * larg;
+  }
+}
+
 void main() {
   //exo 1.1
   List<int> listInt = [8, 6, 4, 84, 3, 2];
@@ -113,25 +235,75 @@ void main() {
   }
 
   print(sumOfSquares(numbers));
-}
 
-class Person implements Comparable {
-  final String first;
-  final String last;
-  final int age;
-  Person(this.first, this.last, this.age);
+  // Cas 1 : 2x3 * 3x2
+  Matrix A = Matrix([
+    [1, 2, 3],
+    [4, 5, 6],
+  ]);
+  Matrix B = Matrix([
+    [7, 8],
+    [9, 10],
+    [11, 12],
+  ]);
+  print((A + B).values);
 
-  @override
-  int compareTo(other) {
-    var resultat = (this.age - other.age) as int;
-    if (resultat == 0) {
-      resultat = (this.last + this.first).compareTo(other.last + other.first);
-    }
-    return resultat;
+  // Cas 2 : 2x2 * 2x2
+  Matrix C = Matrix([
+    [1, 2],
+    [3, 4],
+  ]);
+  Matrix D = Matrix([
+    [5, 6],
+    [7, 8],
+  ]);
+  print((C * D).values);
+
+  // Cas 4 : incompatible
+  Matrix E = Matrix([
+    [1, 2],
+  ]);
+  Matrix F = Matrix([
+    [1, 2],
+  ]);
+  try {
+    print((E * F).values);
+  } catch (e) {
+    print(e);
   }
 
-  @override
-  String toString() {
-    return first + " " + last + " " + age.toString();
+  //main2();
+  main3();
+}
+
+void main2() async {
+  print("Starting Download...");
+  fetchDownload();
+  print("closing client.");
+}
+
+void main3() async {
+  print("Starting Download...");
+  var task = AsyncTask();
+
+  await task.process();
+  print("closing client.");
+}
+
+Future<void> fetchDownload() {
+  return Future.delayed(
+    const Duration(seconds: 2),
+    () => print("Download finished successfully !"),
+  );
+}
+
+class AsyncTask {
+  Future<void> process() async {
+    print("starting process...");
+    await Future.delayed(
+      const Duration(seconds: 2),
+      () => print("process finished succesfully."),
+    );
+    return;
   }
 }
