@@ -9,6 +9,8 @@ class Meteo {
   final double tempMax;
   final int humidite;
   final double vent;
+  final double lat;
+  final double lon;
 
   Meteo({
     required this.ville,
@@ -21,6 +23,8 @@ class Meteo {
     required this.tempMax,
     required this.humidite,
     required this.vent,
+    required this.lat,
+    required this.lon,
   });
 
   factory Meteo.fromJson(Map<String, dynamic> json) {
@@ -35,6 +39,8 @@ class Meteo {
       tempMax: (json['main']['temp_max'] as num).toDouble(),
       humidite: (json['main']['humidity'] as num).toInt(),
       vent: (json['wind']['speed'] as num).toDouble(),
+      lat: (json['coord']['lat'] as num).toDouble(),
+      lon: (json['coord']['lon'] as num).toDouble(),
     );
   }
 }
